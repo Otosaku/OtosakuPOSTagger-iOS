@@ -110,7 +110,7 @@ class BasicTokenizer {
             }
             var toks: [String] = []
             var currentTok = ""
-            for c in token.lowercased() {
+            for c in token {
                 if c.isLetter || c.isNumber || c == "°" {
                     currentTok += String(c)
                 } else if currentTok.count > 0 {
