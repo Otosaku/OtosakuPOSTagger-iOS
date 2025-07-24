@@ -34,7 +34,7 @@ public class SwiftPOSTagger {
     
     
     
-    private func predict(text: String) throws -> Any {
+    public func predict(text: String) throws -> [(String, String)] {
         var tokens = self.tokenizer.tokenizeToIds(text: text)
         tokens.insert(101, at: 0)
         tokens.append(102)
@@ -58,7 +58,6 @@ public class SwiftPOSTagger {
         guard let tokenScores = out.featureValue(for: "token_scores")?.multiArrayValue else {
             throw SwiftPOSTaggerError.outputExtractionFailed("Failed to extract token_scores from model output")
         }
-        print("tokenScores shape:", tokenScores.shape)
         
         // Get the actual number of tokens (excluding CLS and SEP)
         let actualTokenCount = tokens.count - 2  // Remove CLS (101) and SEP (102)
@@ -86,17 +85,8 @@ public class SwiftPOSTagger {
             predictedTags.append(predictedTag)
         }
         
-        // Print results
-        print("📋 POS Tagging Results:")
+        // Create word-tag pairs
         let inputTokens = tokenizer.tokenize(text: text)
-        for (index, (token, tag)) in zip(inputTokens, predictedTags).enumerated() {
-            print("  \(index + 1). '\(token)' -> \(tag)")
-        }
-        
-        return predictedTags
-    }
-    
-    public func test(text: String) throws -> Any {
-        return try predict(text: text)
+        return zip(inputTokens, predictedTags).map { ($0, $1) }
     }
 }

@@ -15,7 +15,7 @@ struct ContentView: View {
     @State private var isDownloading = false
     @State private var downloadProgress: Double = 0.0
     @State private var testText = "The quick brown fox jumps over the lazy dog."
-    @State private var testResult = ""
+    @State private var testResult: [(String, String)] = []
     
     private let modelURL = "https://firebasestorage.googleapis.com/v0/b/my-project-1494707780868.firebasestorage.app/o/quantized-bert-pos-tag.zip?alt=media&token=cd8b9030-8abd-4385-9fb9-9ec27ae5cad7"
     private let modelDirectoryName = "POSModel"
@@ -64,13 +64,30 @@ struct ContentView: View {
                         
                         if !testResult.isEmpty {
                             ScrollView {
-                                Text("Result: \(testResult)")
-                                    .padding()
-                                    .background(Color.gray.opacity(0.1))
-                                    .cornerRadius(8)
-                                    .padding(.horizontal)
+                                VStack(alignment: .leading, spacing: 4) {
+                                    ForEach(Array(testResult.enumerated()), id: \.offset) { index, pair in
+                                        HStack {
+                                            Text(pair.0)
+                                                .fontWeight(.medium)
+                                            Text("→")
+                                                .foregroundColor(.gray)
+                                            Text(pair.1)
+                                                .foregroundColor(.blue)
+                                                .font(.caption)
+                                                .padding(.horizontal, 6)
+                                                .padding(.vertical, 2)
+                                                .background(Color.blue.opacity(0.1))
+                                                .cornerRadius(4)
+                                            Spacer()
+                                        }
+                                    }
+                                }
+                                .padding()
+                                .background(Color.gray.opacity(0.05))
+                                .cornerRadius(8)
+                                .padding(.horizontal)
                             }
-                            .frame(maxHeight: 100)
+                            .frame(maxHeight: 200)
                         }
                     }
                     .padding(.top)
@@ -242,18 +259,15 @@ struct ContentView: View {
     
     private func testPOSTagging() {
         guard let tagger = tagger else {
-            testResult = "Tagger not initialized"
+            testResult = [("Error", "Tagger not initialized")]
             return
         }
         
         do {
-            print("🧪 Testing with text: \(testText)")
-            let result = try tagger.test(text: testText)
-            testResult = String(describing: result)
-            print("✅ Test result: \(result)")
+            let result = try tagger.predict(text: testText)
+            testResult = result
         } catch {
-            testResult = "Error: \(error)"
-            print("❌ Test failed: \(error)")
+            testResult = [("Error", error.localizedDescription)]
         }
     }
 }
