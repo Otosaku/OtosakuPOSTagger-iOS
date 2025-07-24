@@ -42,3 +42,7 @@ The project uses Swift Testing (not XCTest). Tests are written with:
 - `@Test` function annotations instead of XCTest's `test` prefix convention
 - `#expect(...)` assertions instead of XCTest's `XCTAssert` family
 - `@testable import SwiftPOSTagger` for accessing internal APIs
+
+## Important Notes
+
+- Do not include Claude as co-author in commits or other project contributions
